@@ -22,6 +22,26 @@ ShieldNet intercepts DNS resolution requests on your device and evaluates each q
 
 ---
 
+## 📱 Screenshots & User Interface
+
+<div align="center">
+
+### Android Application (Native Jetpack Compose)
+
+| 1. Dashboard | 2. Query Activity | 3. Blocklist Sources |
+|:---:|:---:|:---:|
+| <img src="docs/screenshots/android-dashboard.png" width="250" alt="Dashboard Screen"/> | <img src="docs/screenshots/android-activity.png" width="250" alt="Activity Screen"/> | <img src="docs/screenshots/android-blocklists.png" width="250" alt="Blocklists Screen"/> |
+| *One-tap protection switch & real-time metrics* | *Live log with domain search & allowlist action* | *Toggle curated ad, tracker & malware sources* |
+
+| 4. Custom Rules | 5. Settings & Content Protection |
+|:---:|:---:|
+| <img src="docs/screenshots/android-custom-rules.png" width="250" alt="Custom Rules Screen"/> | <img src="docs/screenshots/android-settings.png" width="250" alt="Settings & Diagnostics Screen"/> |
+| *User-defined block and allow domain rules* | *Adult/Explicit & Gambling filter toggles + Upstream DNS* |
+
+</div>
+
+---
+
 ## Repository Structure
 
 ```
