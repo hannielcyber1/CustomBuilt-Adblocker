@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "listen_host": "127.0.0.1",
+  "listen_port": 53,
+  "upstream_primary": "9.9.9.9",
+  "upstream_secondary": "1.1.1.1",
+  "upstream_port": 53,
+  "blocking_mode": "IP",
+  "block_ttl": 300,
+  "cache_max_size": 10000,
+  "cache_ttl_seconds": 300,
+  "enable_query_logging": true,
+  "max_log_entries": 5000,
+  "auto_update_enabled": true,
+  "auto_update_hours": 24,
+  "start_at_boot": false,
+  "enabled_blocklist_ids": [
+    "stevenblack_hosts",
+    "adguard_dns",
+    "oisd_basic",
+    "stevenblack_adult",
+    "ut1_blacklist_adult",
+    "adguard_adult"
+  ],
+  "enabled_categories": [
+    "Advertising",
+    "Tracking",
+    "Analytics",
+    "Telemetry",
+    "Malware",
+    "Adult Content",
+    "Gambling",
+    "Custom",
+    "General"
+  ],
+  "block_adult_content": true,
+  "block_gambling": false,
+  "custom_rules": []
+}

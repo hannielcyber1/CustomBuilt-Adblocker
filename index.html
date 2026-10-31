@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShieldNet — Cross-Platform Ad & Tracker Blocker</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @keyframes shield-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(35, 134, 54, 0.4); }
+      50%       { box-shadow: 0 0 0 28px rgba(35, 134, 54, 0); }
+    }
+    @keyframes shield-pulse-red {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(218,54,51,0.35); }
+      50%       { box-shadow: 0 0 0 22px rgba(218,54,51,0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px);   }
+      50%       { transform: translateY(-10px); }
+    }
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+    @keyframes tick-count {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    @keyframes scan-line {
+      0%   { transform: translateY(0%);   opacity: 1; }
+      95%  { transform: translateY(200px); opacity: 0; }
+      100% { transform: translateY(0%);   opacity: 0; }
+    }
+    @keyframes glow-green {
+      0%, 100% { text-shadow: 0 0 8px rgba(35,134,54,0.5); }
+      50%       { text-shadow: 0 0 20px rgba(46,160,67,0.9); }
+    }
+    @keyframes bg-grid-move {
+      0%   { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
+    }
+
+    .shield-active  { animation: shield-pulse 2.2s ease-in-out infinite; }
+    .shield-blocked { animation: shield-pulse-red 2.2s ease-in-out infinite; }
+    .float-anim     { animation: float 4s ease-in-out infinite; }
+    .fade-in-up     { animation: fade-in-up 0.7s ease forwards; }
+    .glow-green     { animation: glow-green 2.5s ease-in-out infinite; }
+
+    .hero-bg {
+      background-color: #0d1117;
+      background-image:
+        linear-gradient(rgba(35,134,54,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(35,134,54,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: bg-grid-move 8s linear infinite;
+    }
+
+    .card-hover {
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(88,166,255,0.12);
+      border-color: rgba(88,166,255,0.4);
+    }
+
+    .stat-num {
+      font-variant-numeric: tabular-nums;
+      animation: tick-count 0.4s ease;
+    }
+
+    .scan-overlay {
+      animation: scan-line 3s ease-in-out infinite;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #58a6ff 0%, #238636 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .badge-glow {
+      box-shadow: 0 0 12px rgba(35,134,54,0.4);
+    }
+
+    /* Progress bar fill */
+    .bar-fill {
+      transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+  </style>
+</head>
+<body class="bg-[#0d1117] text-[#f0f6fc] antialiased" style="font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; margin:0; padding:0;">
+
+  <!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+  <nav style="background: rgba(13,17,23,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid #21262d; position: sticky; top:0; z-index:50;">
+    <div style="max-width: 1100px; margin:0 auto; padding: 0 24px; display:flex; align-items:center; justify-content:space-between; height:60px;">
+      <!-- Brand -->
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:34px; height:34px; background: linear-gradient(135deg,#238636,#0d1117); border-radius:8px; border:1.5px solid #238636; display:flex; align-items:center; justify-content:center; font-size:18px;">🛡️</div>
+        <span style="font-size:18px; font-weight:700; letter-spacing:-0.3px;">ShieldNet</span>
+        <span style="font-size:11px; background:#161b22; border:1px solid #30363d; border-radius:4px; padding:1px 7px; color:#8b949e;">v1.0.0</span>
+      </div>
+      <!-- Nav links -->
+      <div style="display:flex; gap:28px; align-items:center;">
+        <a href="#features" style="color:#8b949e; text-decoration:none; font-size:14px; font-weight:500; transition:color .2s;" onmouseover="this.style.color='#f0f6fc'" onmouseout="this.style.color='#8b949e'">Features</a>
+        <a href="#how-it-works" style="color:#8b949e; text-decoration:none; font-size:14px; font-weight:500;" onmouseover="this.style.color='#f0f6fc'" onmouseout="this.style.color='#8b949e'">How It Works</a>
+        <a href="#stats" style="color:#8b949e; text-decoration:none; font-size:14px; font-weight:500;" onmouseover="this.style.color='#f0f6fc'" onmouseout="this.style.color='#8b949e'">Stats</a>
+        <a href="#download" style="color:#8b949e; text-decoration:none; font-size:14px; font-weight:500;" onmouseover="this.style.color='#f0f6fc'" onmouseout="this.style.color='#8b949e'">Download</a>
+        <a href="https://github.com" style="background:#238636; color:#fff; border-radius:6px; padding:6px 14px; font-size:13px; font-weight:600; text-decoration:none; transition:background .2s;" onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">⭐ GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+  <section class="hero-bg" style="padding: 96px 24px 80px; text-align:center; position:relative; overflow:hidden;">
+    <!-- Ambient glow blobs -->
+    <div style="position:absolute; top:-80px; left:50%; transform:translateX(-50%); width:600px; height:300px; background:radial-gradient(ellipse, rgba(35,134,54,0.12) 0%, transparent 70%); pointer-events:none;"></div>
+    <div style="position:absolute; bottom:-40px; right:10%; width:300px; height:200px; background:radial-gradient(ellipse, rgba(88,166,255,0.07) 0%, transparent 70%); pointer-events:none;"></div>
+
+    <div style="max-width: 800px; margin: 0 auto; position:relative;">
+      <!-- Badge -->
+      <div style="display:inline-flex; align-items:center; gap:8px; background:#161b22; border:1px solid #238636; border-radius:20px; padding:5px 14px; margin-bottom:28px;" class="badge-glow fade-in-up">
+        <span style="width:8px; height:8px; background:#238636; border-radius:50%; display:inline-block; animation: shield-pulse 2s infinite;"></span>
+        <span style="font-size:13px; color:#2ea043; font-weight:600;">100% Local · Zero Telemetry · Open Source</span>
+      </div>
+
+      <!-- Headline -->
+      <h1 style="font-size:clamp(36px, 6vw, 62px); font-weight:800; line-height:1.1; margin:0 0 20px; letter-spacing:-1.5px;" class="fade-in-up">
+        Block Ads. Kill Trackers.<br/>
+        <span class="gradient-text glow-green">Own Your DNS.</span>
+      </h1>
+
+      <p style="font-size:18px; color:#8b949e; max-width:560px; margin:0 auto 40px; line-height:1.65;" class="fade-in-up">
+        ShieldNet is a DNS-layer privacy engine for <strong style="color:#f0f6fc;">Windows</strong> and <strong style="color:#f0f6fc;">Android</strong>.
+        No HTTPS interception. No root certificates. No cloud. Just fast, local, deterministic blocking.
+      </p>
+
+      <!-- CTA Row -->
+      <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap; margin-bottom:56px;" class="fade-in-up">
+        <a href="#download" style="background:linear-gradient(135deg,#238636,#1a7f37); color:#fff; border-radius:8px; padding:14px 28px; font-size:15px; font-weight:700; text-decoration:none; border:1px solid #2ea043; display:flex; align-items:center; gap:8px; box-shadow: 0 4px 18px rgba(35,134,54,0.35); transition: transform .15s, box-shadow .15s;" onmouseover="this.style.transform='scale(1.03)'; this.style.boxShadow='0 6px 28px rgba(35,134,54,0.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 18px rgba(35,134,54,0.35)'">
+          <span style="font-size:20px;">🛡️</span> Download for Windows
+        </a>
+        <a href="#download" style="background:#161b22; color:#f0f6fc; border-radius:8px; padding:14px 28px; font-size:15px; font-weight:700; text-decoration:none; border:1px solid #30363d; display:flex; align-items:center; gap:8px; transition: border-color .2s, transform .15s;" onmouseover="this.style.borderColor='#58a6ff'; this.style.transform='scale(1.03)'" onmouseout="this.style.borderColor='#30363d'; this.style.transform='scale(1)'">
+          <span style="font-size:20px;">📱</span> Get the Android APK
+        </a>
+      </div>
+
+      <!-- Animated Shield Demo -->
+      <div class="float-anim" style="display:flex; justify-content:center;">
+        <div style="position:relative; width:220px; height:220px;">
+          <!-- Outer ring -->
+          <div style="position:absolute; inset:0; border-radius:50%; border:2px solid rgba(35,134,54,0.25);"></div>
+          <div style="position:absolute; inset:12px; border-radius:50%; border:1px solid rgba(35,134,54,0.15);"></div>
+          <!-- Shield circle -->
+          <div id="hero-shield" class="shield-active" style="position:absolute; inset:24px; background:linear-gradient(135deg, #161b22 0%, #0d1117 100%); border-radius:50%; border:2px solid #238636; display:flex; align-items:center; justify-content:center; font-size:72px; cursor:pointer; user-select:none; transition: border-color .3s, background .3s;" onclick="toggleHeroShield()">🛡️</div>
+          <!-- Status pill -->
+          <div id="hero-status" style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%); background:#238636; border-radius:12px; padding:3px 14px; font-size:12px; font-weight:700; white-space:nowrap; transition: background .3s;">SHIELD ACTIVE</div>
+          <!-- Orbiting blocked dot -->
+          <div id="orbit-dot" style="position:absolute; top:18px; right:18px; width:18px; height:18px; background:#da3633; border-radius:50%; border:2px solid #0d1117; display:flex; align-items:center; justify-content:center; font-size:9px;">✕</div>
+        </div>
+      </div>
+      <p style="color:#8b949e; font-size:12px; margin-top:18px;">Click the shield above to preview block/allow toggle</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ LIVE COUNTER STRIP ═══════════════════════════ -->
+  <section id="stats" style="background:#161b22; border-top:1px solid #21262d; border-bottom:1px solid #21262d; padding:32px 24px;">
+    <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns: repeat(4, 1fr); gap:24px; text-align:center;">
+      <div>
+        <div id="ctr-blocked" class="stat-num" style="font-size:36px; font-weight:800; color:#da3633;">0</div>
+        <div style="color:#8b949e; font-size:13px; margin-top:4px;">Queries Blocked Today</div>
+      </div>
+      <div>
+        <div id="ctr-rules" class="stat-num" style="font-size:36px; font-weight:800; color:#58a6ff;">0</div>
+        <div style="color:#8b949e; font-size:13px; margin-top:4px;">Active Domain Rules</div>
+      </div>
+      <div>
+        <div id="ctr-lists" class="stat-num" style="font-size:36px; font-weight:800; color:#8957e5;">3</div>
+        <div style="color:#8b949e; font-size:13px; margin-top:4px;">Verified Blocklist Sources</div>
+      </div>
+      <div>
+        <div id="ctr-latency" class="stat-num" style="font-size:36px; font-weight:800; color:#238636;">&lt;1ms</div>
+        <div style="color:#8b949e; font-size:13px; margin-top:4px;">Filter Decision Latency</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FEATURES ═══════════════════════════ -->
+  <section id="features" style="padding:80px 24px; max-width:1100px; margin:0 auto;">
+    <div style="text-align:center; margin-bottom:56px;">
+      <div style="display:inline-block; background:#161b22; border:1px solid #30363d; border-radius:6px; padding:3px 12px; font-size:12px; color:#58a6ff; font-weight:600; margin-bottom:16px; text-transform:uppercase; letter-spacing:.8px;">What's Inside</div>
+      <h2 style="font-size:36px; font-weight:800; margin:0 0 12px; letter-spacing:-0.5px;">Everything a Privacy Tool Should Be</h2>
+      <p style="color:#8b949e; font-size:16px; max-width:500px; margin:0 auto;">Built by engineers who take security seriously. No bloatware, no cloud lock-in, no mystery boxes.</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
+
+      <!-- Feature cards -->
+      <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:28px;">
+        <div style="font-size:32px; margin-bottom:16px;">🔀</div>
+        <h3 style="font-size:17px; font-weight:700; margin:0 0 10px;">Reverse-Label Trie Engine</h3>
+        <p style="color:#8b949e; font-size:14px; line-height:1.6; margin:0;">Domain-boundary-safe matching in <code style="background:#0d1117; padding:1px 5px; border-radius:3px; color:#58a6ff;">O(k)</code> time. <code>notexample.com</code> never matches a rule for <code>example.com</code>. Ever.</p>
+      </div>
+
+      <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:28px;">
+        <div style="font-size:32px; margin-bottom:16px;">🔒</div>
+        <h3 style="font-size:17px; font-weight:700; margin:0 0 10px;">Zero Traffic Interception</h3>
+        <p style="color:#8b949e; font-size:14px; line-height:1.6; margin:0;">ShieldNet only evaluates DNS queries — never inspects payloads, decrypts HTTPS, installs certificates, or proxies connections.</p>
+      </div>
+
+      <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:28px;">
+        <div style="font-size:32px; margin-bottom:16px;">⚡</div>
+        <h3 style="font-size:17px; font-weight:700; margin:0 0 10px;">LRU Decision Cache</h3>
+        <p style="color:#8b949e; font-size:14px; line-height:1.6; margin:0;">Thread-safe, TTL-aware LRU cache means frequently queried domains resolve in nanoseconds after the first evaluation.</p>
+      </div>
+
+      <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:28px;">
+        <div style="font-size:32px; margin-bottom:16px;">📋</div>
+        <h3 style="font-size:17px; font-weight:700; margin:0 0 10px;">3 Verified Blocklists</h3>
+        <p style="color:#8b949e; font-size:14px; line-height:1.6; margin:0;">StevenBlack Unified Hosts, AdGuard DNS Filter, and OISD Basic. All downloaded directly from official repositories over HTTPS.</p>
+      </div>
+
+      <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:28px;">
+        <div style="font-size:32px; margin-bottom:16px;">🤖</div>
+        <h3 style="font-size:17px; font-weight:700; margin:0 0 10px;">Auto-Update Engine</h3>
+        <p style="color:#8b949e; font-size:14px; line-height:1.6; margin:0;">Validates content before activating. A failed download falls back to the last cached copy — one broken list never kills your protection.</p>
+      </div>
+
+      <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:28px;">
+        <div style="font-size:32px; margin-bottom:16px;">🧩</div>
+        <h3 style="font-size:17px; font-weight:700; margin:0 0 10px;">Custom Rules & Allowlists</h3>
+        <p style="color:#8b949e; font-size:14px; line-height:1.6; margin:0;">Allow rules unconditionally override block rules. One tap to allowlist a broken domain directly from the live query log.</p>
+      </div>
+
+      <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:28px;">
+        <div style="font-size:32px; margin-bottom:16px;">🪟</div>
+        <h3 style="font-size:17px; font-weight:700; margin:0 0 10px;">Windows Service Integration</h3>
+        <p style="color:#8b949e; font-size:14px; line-height:1.6; margin:0;">Runs as a persistent background service. Backups your adapter DNS before touching anything. Restores it cleanly on shutdown or uninstall.</p>
+      </div>
+
+      <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:28px;">
+        <div style="font-size:32px; margin-bottom:16px;">📱</div>
+        <h3 style="font-size:17px; font-weight:700; margin:0 0 10px;">Android VpnService (No Root)</h3>
+        <p style="color:#8b949e; font-size:14px; line-height:1.6; margin:0;">Routes only DNS traffic through the TUN interface — not your video streams or downloads. Battery-safe by design. No root required.</p>
+      </div>
+
+      <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:28px;">
+        <div style="font-size:32px; margin-bottom:16px;">📊</div>
+        <h3 style="font-size:17px; font-weight:700; margin:0 0 10px;">Live Dashboard & Analytics</h3>
+        <p style="color:#8b949e; font-size:14px; line-height:1.6; margin:0;">Real blocked/allowed counts, per-category breakdowns, query latency, and searchable log — all from on-device data only.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ HOW IT WORKS ═══════════════════════════ -->
+  <section id="how-it-works" style="background:#0a0d12; border-top:1px solid #21262d; border-bottom:1px solid #21262d; padding:80px 24px;">
+    <div style="max-width:900px; margin:0 auto;">
+      <div style="text-align:center; margin-bottom:52px;">
+        <div style="display:inline-block; background:#161b22; border:1px solid #30363d; border-radius:6px; padding:3px 12px; font-size:12px; color:#58a6ff; font-weight:600; margin-bottom:16px; text-transform:uppercase; letter-spacing:.8px;">Under the Hood</div>
+        <h2 style="font-size:36px; font-weight:800; margin:0 0 12px; letter-spacing:-0.5px;">How ShieldNet Filters DNS</h2>
+        <p style="color:#8b949e; font-size:16px; margin:0 auto; max-width:480px;">A deterministic 5-step pipeline processes every query in microseconds.</p>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:0;">
+        <!-- Step cards with connector lines -->
+        <div id="steps-container">
+        </div>
+      </div>
+
+      <!-- Interactive flow demo -->
+      <div style="background:#161b22; border:1px solid #30363d; border-radius:16px; padding:32px; margin-top:40px;">
+        <h3 style="font-size:18px; font-weight:700; margin:0 0 24px; text-align:center;">Try a Live Domain Evaluation</h3>
+        <div style="display:flex; gap:12px; margin-bottom:20px;">
+          <input id="demo-input" type="text" placeholder="Enter a domain... (e.g. ad.doubleclick.net)" value="ad.doubleclick.net"
+            style="flex:1; background:#0d1117; border:1px solid #30363d; border-radius:8px; padding:12px 16px; color:#f0f6fc; font-size:14px; outline:none; transition: border-color .2s;"
+            onfocus="this.style.borderColor='#58a6ff'" onblur="this.style.borderColor='#30363d'" />
+          <button onclick="runDemoEval()" style="background:#238636; color:#fff; border:none; border-radius:8px; padding:12px 22px; font-size:14px; font-weight:700; cursor:pointer; transition: background .2s, transform .15s;" onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">Evaluate →</button>
+        </div>
+        <div id="demo-result" style="display:none; border-radius:10px; padding:20px; border:1px solid #30363d;">
+          <div id="demo-verdict" style="font-size:22px; font-weight:800; margin-bottom:10px;"></div>
+          <div id="demo-pipeline" style="display:flex; flex-direction:column; gap:6px;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ CATEGORY BREAKDOWN ═══════════════════════════ -->
+  <section style="padding:80px 24px; max-width:1100px; margin:0 auto;">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:48px; align-items:center;">
+      <!-- Left: text -->
+      <div>
+        <div style="display:inline-block; background:#161b22; border:1px solid #30363d; border-radius:6px; padding:3px 12px; font-size:12px; color:#58a6ff; font-weight:600; margin-bottom:16px; text-transform:uppercase; letter-spacing:.8px;">Category Filtering</div>
+        <h2 style="font-size:34px; font-weight:800; margin:0 0 16px; letter-spacing:-0.5px;">Granular Control, Not a Blunt Instrument</h2>
+        <p style="color:#8b949e; font-size:15px; line-height:1.7; margin:0 0 24px;">Toggle entire categories on or off independently. Disable analytics during development without sacrificing ad blocking.</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px; color:#8b949e; font-size:14px;"><span style="color:#238636;">✓</span> Allowlist rules always win — regardless of category state</div>
+          <div style="display:flex; align-items:center; gap:10px; color:#8b949e; font-size:14px;"><span style="color:#238636;">✓</span> Import &amp; export rules between Windows and Android via JSON</div>
+          <div style="display:flex; align-items:center; gap:10px; color:#8b949e; font-size:14px;"><span style="color:#238636;">✓</span> One-click allowlist from the live query inspector</div>
+        </div>
+      </div>
+
+      <!-- Right: animated category bars -->
+      <div style="background:#161b22; border:1px solid #30363d; border-radius:16px; padding:28px;">
+        <div style="font-size:13px; font-weight:700; color:#8b949e; text-transform:uppercase; letter-spacing:.8px; margin-bottom:20px;">Blocked by Category (Sample)</div>
+        <div id="cat-bars" style="display:flex; flex-direction:column; gap:16px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ PLATFORM TABS ═══════════════════════════ -->
+  <section style="background:#0a0d12; border-top:1px solid #21262d; border-bottom:1px solid #21262d; padding:80px 24px;">
+    <div style="max-width:900px; margin:0 auto; text-align:center;">
+      <div style="display:inline-block; background:#161b22; border:1px solid #30363d; border-radius:6px; padding:3px 12px; font-size:12px; color:#58a6ff; font-weight:600; margin-bottom:16px; text-transform:uppercase; letter-spacing:.8px;">Two Platforms, One Engine</div>
+      <h2 style="font-size:36px; font-weight:800; margin:0 0 40px; letter-spacing:-0.5px;">Same Rules. Same Logic. Everywhere.</h2>
+
+      <!-- Platform tabs -->
+      <div style="display:flex; gap:0; border:1px solid #30363d; border-radius:10px; overflow:hidden; margin-bottom:36px; display:inline-flex;">
+        <button id="tab-win" onclick="switchTab('win')" style="padding:12px 28px; background:#238636; color:#fff; font-size:14px; font-weight:700; border:none; cursor:pointer; transition: background .2s;">🪟 Windows</button>
+        <button id="tab-and" onclick="switchTab('and')" style="padding:12px 28px; background:#161b22; color:#8b949e; font-size:14px; font-weight:700; border:none; cursor:pointer; transition: background .2s;">📱 Android</button>
+      </div>
+
+      <div id="platform-content-win" style="background:#161b22; border:1px solid #30363d; border-radius:16px; padding:32px; text-align:left;">
+        <h3 style="margin:0 0 16px; font-size:20px; font-weight:700;">Windows Desktop — Python + PySide6</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div>
+            <div style="color:#8b949e; font-size:13px; text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px;">Architecture</div>
+            <ul style="color:#f0f6fc; font-size:14px; line-height:1.8; margin:0; padding-left:18px;">
+              <li>Background daemon on <code style="color:#58a6ff; background:#0d1117; padding:1px 5px; border-radius:3px;">127.0.0.1:53</code></li>
+              <li>IPC control socket on <code style="color:#58a6ff; background:#0d1117; padding:1px 5px; border-radius:3px;">127.0.0.1:49512</code></li>
+              <li>Adapter DNS redirect via <code style="color:#58a6ff; background:#0d1117; padding:1px 5px; border-radius:3px;">netsh</code></li>
+              <li>PowerShell-based DNS snapshot &amp; restore</li>
+              <li>Inno Setup distributable installer</li>
+            </ul>
+          </div>
+          <div>
+            <div style="color:#8b949e; font-size:13px; text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px;">GUI Screens</div>
+            <ul style="color:#f0f6fc; font-size:14px; line-height:1.8; margin:0; padding-left:18px;">
+              <li>Dashboard — live metrics</li>
+              <li>Query Activity — searchable log</li>
+              <li>Blocklists — toggle &amp; refresh</li>
+              <li>Custom Rules — add/remove/export</li>
+              <li>Settings &amp; Diagnostics</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="platform-content-and" style="display:none; background:#161b22; border:1px solid #30363d; border-radius:16px; padding:32px; text-align:left;">
+        <h3 style="margin:0 0 16px; font-size:20px; font-weight:700;">Android APK — Kotlin + Jetpack Compose</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div>
+            <div style="color:#8b949e; font-size:13px; text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px;">Architecture</div>
+            <ul style="color:#f0f6fc; font-size:14px; line-height:1.8; margin:0; padding-left:18px;">
+              <li>Android <code style="color:#58a6ff; background:#0d1117; padding:1px 5px; border-radius:3px;">VpnService</code> TUN interface</li>
+              <li>DNS-only routing (battery-safe)</li>
+              <li>Upstream sockets are <code style="color:#58a6ff; background:#0d1117; padding:1px 5px; border-radius:3px;">protect()</code>'ed</li>
+              <li>No root required</li>
+              <li>WorkManager for background updates</li>
+            </ul>
+          </div>
+          <div>
+            <div style="color:#8b949e; font-size:13px; text-transform:uppercase; letter-spacing:.8px; margin-bottom:10px;">Screens</div>
+            <ul style="color:#f0f6fc; font-size:14px; line-height:1.8; margin:0; padding-left:18px;">
+              <li>Dashboard — shield status</li>
+              <li>Activity — query log &amp; search</li>
+              <li>Blocklists — enable/disable</li>
+              <li>Custom Rules — add/allow/block</li>
+              <li>Settings — resolver + Private DNS notice</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ TRANSPARENCY STRIP ═══════════════════════════ -->
+  <section style="padding:60px 24px; background:#161b22; border-top:1px solid #21262d; border-bottom:1px solid #21262d;">
+    <div style="max-width:1100px; margin:0 auto; display:grid; grid-template-columns: repeat(3, 1fr); gap:24px; text-align:center;">
+      <div>
+        <div style="font-size:28px; margin-bottom:12px;">🧪</div>
+        <div style="font-weight:700; font-size:15px; margin-bottom:8px;">21 / 21 Tests Pass</div>
+        <div style="color:#8b949e; font-size:13px; line-height:1.6;">Full unit and socket integration tests across domain normalization, Trie matching, UDP/TCP proxy, and Windows IPC.</div>
+      </div>
+      <div>
+        <div style="font-size:28px; margin-bottom:12px;">📖</div>
+        <div style="font-weight:700; font-size:15px; margin-bottom:8px;">MIT Licensed &amp; Open Source</div>
+        <div style="color:#8b949e; font-size:13px; line-height:1.6;">Full source on GitHub. Audit the filtering logic, blocklist selection, and DNS handling yourself.</div>
+      </div>
+      <div>
+        <div style="font-size:28px; margin-bottom:12px;">🏛️</div>
+        <div style="font-weight:700; font-size:15px; margin-bottom:8px;">STRIDE Threat Modelled</div>
+        <div style="color:#8b949e; font-size:13px; line-height:1.6;">Spoofing, tampering, amplification, over-blocking risks all documented and mitigated in the public threat model.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ DOWNLOAD ═══════════════════════════ -->
+  <section id="download" style="padding:80px 24px; text-align:center;">
+    <div style="max-width:700px; margin:0 auto;">
+      <div style="font-size:48px; margin-bottom:20px;">🛡️</div>
+      <h2 style="font-size:40px; font-weight:800; margin:0 0 16px; letter-spacing:-1px;">Start Blocking in Minutes</h2>
+      <p style="color:#8b949e; font-size:16px; margin:0 auto 40px; max-width:480px; line-height:1.65;">No accounts. No subscription. No data sent anywhere. Just install and start protecting your DNS.</p>
+
+      <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:32px;">
+        <!-- Windows card -->
+        <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:16px; padding:32px 36px; min-width:240px; text-align:left;">
+          <div style="font-size:36px; margin-bottom:14px;">🪟</div>
+          <div style="font-size:18px; font-weight:700; margin-bottom:6px;">Windows</div>
+          <div style="color:#8b949e; font-size:13px; margin-bottom:20px;">Windows 10 / 11 · Python 3.13+</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <a href="#" style="background:#238636; color:#fff; border-radius:7px; padding:10px 16px; font-size:13px; font-weight:700; text-decoration:none; display:flex; align-items:center; gap:8px;" onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">
+              ⬇ Download Installer (.exe)
+            </a>
+            <a href="#" style="background:#21262d; color:#f0f6fc; border-radius:7px; padding:10px 16px; font-size:13px; font-weight:700; text-decoration:none; display:flex; align-items:center; gap:8px; border:1px solid #30363d;" onmouseover="this.style.background='#30363d'" onmouseout="this.style.background='#21262d'">
+              📂 Run from Source (README)
+            </a>
+          </div>
+        </div>
+
+        <!-- Android card -->
+        <div class="card-hover" style="background:#161b22; border:1px solid #30363d; border-radius:16px; padding:32px 36px; min-width:240px; text-align:left;">
+          <div style="font-size:36px; margin-bottom:14px;">📱</div>
+          <div style="font-size:18px; font-weight:700; margin-bottom:6px;">Android</div>
+          <div style="color:#8b949e; font-size:13px; margin-bottom:20px;">Android 8.0+ · No Root Required</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <a href="#" style="background:#8957e5; color:#fff; border-radius:7px; padding:10px 16px; font-size:13px; font-weight:700; text-decoration:none; display:flex; align-items:center; gap:8px;" onmouseover="this.style.background='#a371f7'" onmouseout="this.style.background='#8957e5'">
+              ⬇ Download APK (Debug)
+            </a>
+            <a href="#" style="background:#21262d; color:#f0f6fc; border-radius:7px; padding:10px 16px; font-size:13px; font-weight:700; text-decoration:none; display:flex; align-items:center; gap:8px; border:1px solid #30363d;" onmouseover="this.style.background='#30363d'" onmouseout="this.style.background='#21262d'">
+              🔨 Build with Android Studio
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick install command -->
+      <div style="background:#0d1117; border:1px solid #30363d; border-radius:10px; padding:16px 20px; display:inline-flex; align-items:center; gap:14px; font-family: 'Consolas', 'Courier New', monospace;">
+        <span style="color:#8b949e; font-size:13px;">Quick Start (Windows):</span>
+        <code style="color:#58a6ff; font-size:14px;">pip install dnspython requests &amp;&amp; python windows/desktop/app.py</code>
+        <button onclick="navigator.clipboard.writeText('pip install dnspython requests && python windows/desktop/app.py'); this.textContent='✓ Copied!'; setTimeout(()=>this.textContent='Copy',1600);" style="background:#21262d; border:1px solid #30363d; color:#f0f6fc; border-radius:5px; padding:5px 10px; font-size:12px; cursor:pointer; white-space:nowrap;">Copy</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+  <footer style="background:#0a0d12; border-top:1px solid #21262d; padding:40px 24px;">
+    <div style="max-width:1100px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:20px;">
+      <div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <span style="font-size:20px;">🛡️</span>
+          <span style="font-weight:700; font-size:16px;">ShieldNet</span>
+        </div>
+        <div style="color:#8b949e; font-size:13px;">Built for legitimate personal privacy protection.</div>
+      </div>
+      <div style="display:flex; gap:24px; flex-wrap:wrap;">
+        <a href="docs/privacy.md" style="color:#8b949e; font-size:13px; text-decoration:none;" onmouseover="this.style.color='#f0f6fc'" onmouseout="this.style.color='#8b949e'">Privacy Policy</a>
+        <a href="docs/threat-model.md" style="color:#8b949e; font-size:13px; text-decoration:none;" onmouseover="this.style.color='#f0f6fc'" onmouseout="this.style.color='#8b949e'">Threat Model</a>
+        <a href="docs/architecture.md" style="color:#8b949e; font-size:13px; text-decoration:none;" onmouseover="this.style.color='#f0f6fc'" onmouseout="this.style.color='#8b949e'">Architecture</a>
+        <a href="docs/troubleshooting.md" style="color:#8b949e; font-size:13px; text-decoration:none;" onmouseover="this.style.color='#f0f6fc'" onmouseout="this.style.color='#8b949e'">Troubleshooting</a>
+        <a href="https://github.com" style="color:#58a6ff; font-size:13px; text-decoration:none; font-weight:600;">⭐ GitHub</a>
+      </div>
+      <div style="color:#8b949e; font-size:12px;">MIT License · Python 3.13 · Kotlin 2.0 · dnspython 2.9</div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── Hero Shield Toggle ───────────────────────────────────────
+    let shieldActive = true;
+    function toggleHeroShield() {
+      shieldActive = !shieldActive;
+      const el = document.getElementById('hero-shield');
+      const status = document.getElementById('hero-status');
+      const dot = document.getElementById('orbit-dot');
+      if (shieldActive) {
+        el.style.borderColor = '#238636';
+        el.className = 'shield-active';
+        el.style.background = 'linear-gradient(135deg, #161b22 0%, #0d1117 100%)';
+        status.style.background = '#238636';
+        status.textContent = 'SHIELD ACTIVE';
+        dot.style.background = '#da3633';
+        dot.textContent = '✕';
+      } else {
+        el.style.borderColor = '#8b949e';
+        el.className = '';
+        el.style.background = 'linear-gradient(135deg, #161b22 0%, #0d1117 100%)';
+        el.style.boxShadow = 'none';
+        status.style.background = '#6e7681';
+        status.textContent = 'PAUSED';
+        dot.style.background = '#8b949e';
+        dot.textContent = '○';
+      }
+    }
+
+    // ─── Live Counter Animated Counts ────────────────────────────
+    function animateCount(el, target, prefix='', suffix='', duration=1800) {
+      const start = performance.now();
+      function update(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(eased * target);
+        el.textContent = prefix + current.toLocaleString() + suffix;
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    }
+
+    const countersTriggered = { triggered: false };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !countersTriggered.triggered) {
+          countersTriggered.triggered = true;
+          animateCount(document.getElementById('ctr-blocked'), 142837, '', '');
+          animateCount(document.getElementById('ctr-rules'), 248000, '', '');
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(document.getElementById('ctr-blocked'));
+
+    // ─── How It Works Steps ──────────────────────────────────────
+    const steps = [
+      { icon: '🔤', label: 'Normalize & Validate', desc: 'Lowercase, strip schemes/paths/ports, convert IDN to Punycode ASCII, enforce RFC 1035 label length limits.', color: '#58a6ff' },
+      { icon: '✅', label: 'Check Allowlist (Trie)', desc: 'If a matching allow rule is found — including subdomains — the domain is immediately permitted. Allowlist always wins.', color: '#238636' },
+      { icon: '🚫', label: 'Check Blocklist (Trie)', desc: 'Reverse-label Trie walk. Domain boundaries are structurally respected — prefix domains never match.', color: '#da3633' },
+      { icon: '🏷️', label: 'Category Filter Check', desc: 'If the matched rule\'s category (Ads, Telemetry, Analytics…) is disabled by the user, the domain is allowed regardless.', color: '#8957e5' },
+      { icon: '📡', label: 'Forward or Block', desc: 'Permitted → UDP forwarded to upstream resolver (TCP fallback on TC bit). Blocked → 0.0.0.0 / :: / NXDOMAIN returned.', color: '#d29922' },
+    ];
+
+    const stepsContainer = document.getElementById('steps-container');
+    steps.forEach((step, i) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'display:flex; gap:20px; align-items:flex-start; padding-bottom:0;';
+
+      const lineWrapper = document.createElement('div');
+      lineWrapper.style.cssText = 'display:flex; flex-direction:column; align-items:center; flex-shrink:0;';
+
+      const circle = document.createElement('div');
+      circle.style.cssText = `width:44px; height:44px; border-radius:50%; background:#161b22; border:2px solid ${step.color}; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; z-index:1;`;
+      circle.textContent = step.icon;
+
+      const connector = document.createElement('div');
+      connector.style.cssText = `width:2px; height:32px; background:linear-gradient(to bottom, ${step.color}55, transparent); flex-shrink:0;`;
+
+      lineWrapper.appendChild(circle);
+      if (i < steps.length - 1) lineWrapper.appendChild(connector);
+
+      const content = document.createElement('div');
+      content.style.cssText = 'padding: 10px 0 24px;';
+      content.innerHTML = `
+        <div style="font-size:15px; font-weight:700; margin-bottom:4px;">
+          <span style="color:${step.color}; font-size:12px; font-weight:700; margin-right:8px;">STEP ${i+1}</span>
+          ${step.label}
+        </div>
+        <div style="color:#8b949e; font-size:14px; line-height:1.6;">${step.desc}</div>
+      `;
+
+      wrapper.appendChild(lineWrapper);
+      wrapper.appendChild(content);
+      stepsContainer.appendChild(wrapper);
+    });
+
+    // ─── Live Demo Evaluation ─────────────────────────────────────
+    const sampleBlocklist = ['ad.doubleclick.net','pagead2.googlesyndication.com','ads.google.com','telemetry.microsoft.com','analytics.tiktok.com','log.byteoversea.com','branch.io','app-measurement.com','vortex.data.microsoft.com','pixel.facebook.com','adservice.google.com'];
+    const sampleAllowlist = ['api.trusted.com','cdn.github.com','fonts.gstatic.com'];
+
+    function runDemoEval() {
+      const raw = document.getElementById('demo-input').value.trim().toLowerCase();
+      if (!raw) return;
+
+      const resultBox = document.getElementById('demo-result');
+      const verdictEl = document.getElementById('demo-verdict');
+      const pipelineEl = document.getElementById('demo-pipeline');
+
+      const domain = raw.replace(/^https?:\/\//, '').split('/')[0].split('?')[0];
+      const isBlocked = sampleBlocklist.some(b => domain === b || domain.endsWith('.' + b));
+      const isAllowed = sampleAllowlist.some(a => domain === a || domain.endsWith('.' + a));
+      const final = isAllowed ? 'ALLOWED' : isBlocked ? 'BLOCKED' : 'ALLOWED';
+
+      const pipelineSteps = [
+        { label: '1. Normalize', result: domain, ok: true },
+        { label: '2. Allowlist Check', result: isAllowed ? '✅ Match — permitted immediately' : '— No match', ok: isAllowed },
+        { label: '3. Blocklist Check', result: isBlocked && !isAllowed ? '🚫 Match — blocked' : '— No match', ok: !isBlocked },
+        { label: '4. Category Filter', result: 'Advertising — enabled', ok: !isBlocked },
+        { label: '5. Decision', result: final === 'BLOCKED' ? '→ 0.0.0.0 returned' : '→ Forwarded to 9.9.9.9', ok: final === 'ALLOWED' },
+      ];
+
+      verdictEl.textContent = final === 'BLOCKED' ? '🚫 BLOCKED — Null-routed (0.0.0.0)' : '✅ ALLOWED — Forwarded to upstream resolver';
+      verdictEl.style.color = final === 'BLOCKED' ? '#da3633' : '#238636';
+      resultBox.style.background = final === 'BLOCKED' ? 'rgba(218,54,51,0.06)' : 'rgba(35,134,54,0.06)';
+      resultBox.style.borderColor = final === 'BLOCKED' ? '#da3633' : '#238636';
+      resultBox.style.display = 'block';
+
+      pipelineEl.innerHTML = '';
+      pipelineSteps.forEach((s, idx) => {
+        setTimeout(() => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex; align-items:center; gap:12px; background:#0d1117; border-radius:6px; padding:8px 12px; font-size:13px; animation: fade-in-up 0.3s ease;';
+          row.innerHTML = `<span style="color:#8b949e; min-width:160px;">${s.label}</span><span style="color:${s.ok ? '#238636' : '#8b949e'};">${s.result}</span>`;
+          pipelineEl.appendChild(row);
+        }, idx * 120);
+      });
+    }
+
+    // Run on Enter
+    document.getElementById('demo-input').addEventListener('keydown', e => { if (e.key === 'Enter') runDemoEval(); });
+
+    // ─── Category Bars ────────────────────────────────────────────
+    const categories = [
+      { name: 'Advertising',  count: 58240, color: '#da3633', pct: 82 },
+      { name: 'Tracking',     count: 31180, color: '#8957e5', pct: 55 },
+      { name: 'Telemetry',    count: 28600, color: '#d29922', pct: 50 },
+      { name: 'Analytics',    count: 18410, color: '#58a6ff', pct: 33 },
+      { name: 'Custom Rules', count: 6407,  color: '#238636', pct: 14 },
+    ];
+
+    const catBarsEl = document.getElementById('cat-bars');
+    const catObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        catObserver.disconnect();
+        categories.forEach((cat, i) => {
+          const el = document.createElement('div');
+          el.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+              <span style="font-weight:600;">${cat.name}</span>
+              <span style="color:#8b949e;">${cat.count.toLocaleString()}</span>
+            </div>
+            <div style="background:#21262d; border-radius:4px; height:8px; overflow:hidden;">
+              <div id="bar-${i}" class="bar-fill" style="height:100%; width:0%; background:${cat.color}; border-radius:4px; transition: width 1.2s ${i*0.15}s cubic-bezier(0.4,0,0.2,1);"></div>
+            </div>
+          `;
+          catBarsEl.appendChild(el);
+          setTimeout(() => {
+            document.getElementById(`bar-${i}`).style.width = cat.pct + '%';
+          }, 100);
+        });
+      }
+    }, { threshold: 0.3 });
+    catObserver.observe(catBarsEl);
+
+    // ─── Platform Tabs ────────────────────────────────────────────
+    function switchTab(platform) {
+      const winContent = document.getElementById('platform-content-win');
+      const andContent = document.getElementById('platform-content-and');
+      const winBtn = document.getElementById('tab-win');
+      const andBtn = document.getElementById('tab-and');
+
+      if (platform === 'win') {
+        winContent.style.display = 'block';
+        andContent.style.display = 'none';
+        winBtn.style.background = '#238636';
+        winBtn.style.color = '#fff';
+        andBtn.style.background = '#161b22';
+        andBtn.style.color = '#8b949e';
+      } else {
+        winContent.style.display = 'none';
+        andContent.style.display = 'block';
+        andBtn.style.background = '#8957e5';
+        andBtn.style.color = '#fff';
+        winBtn.style.background = '#161b22';
+        winBtn.style.color = '#8b949e';
+      }
+    }
+
+    // ─── Scroll Reveal ────────────────────────────────────────────
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card-hover').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease, box-shadow 0.2s ease, border-color 0.2s ease';
+      revealObserver.observe(el);
+    });
+  </script>
+</body>
+</html>

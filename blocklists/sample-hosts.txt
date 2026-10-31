@@ -1,0 +1,47 @@
+# ShieldNet Sample Domain Blocklist
+# Format: Standard Hosts & Adblock Domain Syntax
+# This file is used for integration testing and default local baseline protection.
+
+# Localhost entries (ShieldNet safely ignores these)
+127.0.0.1 localhost
+::1 localhost
+
+# Advertising Networks
+0.0.0.0 ad.doubleclick.net
+0.0.0.0 pagead2.googlesyndication.com
+0.0.0.0 ads.google.com
+0.0.0.0 adservice.google.com
+0.0.0.0 static.doubleclick.net
+0.0.0.0 securepubads.g.doubleclick.net
+0.0.0.0 an.facebook.com
+0.0.0.0 ads.pubmatic.com
+0.0.0.0 ib.adnxs.com
+
+# Tracking & Analytics
+0.0.0.0 pixel.facebook.com
+0.0.0.0 analytics.tiktok.com
+0.0.0.0 log.byteoversea.com
+0.0.0.0 branch.io
+0.0.0.0 app-measurement.com
+
+# Telemetry
+0.0.0.0 vortex.data.microsoft.com
+0.0.0.0 telemetry.microsoft.com
+0.0.0.0 diagnostics.support.apple.com
+
+# Explicit & Adult Content (Baseline)
+0.0.0.0 pornhub.com
+0.0.0.0 xvideos.com
+0.0.0.0 xhamster.com
+0.0.0.0 redtube.com
+0.0.0.0 youporn.com
+0.0.0.0 xnxx.com
+0.0.0.0 chaturbate.com
+0.0.0.0 livejasmin.com
+0.0.0.0 stripchat.com
+0.0.0.0 onlyfans.com
+
+# Adblock-style domain rules
+||adserver-network.example.com^
+||tracking-beacon.example.net^
+@@||trusted-cdn.tracking-beacon.example.net^

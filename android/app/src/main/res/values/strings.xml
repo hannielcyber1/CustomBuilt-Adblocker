@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ShieldNet</string>
+    <string name="shield_active">Protection Active</string>
+    <string name="shield_paused">Protection Paused</string>
+    <string name="shield_desc_active">Ads, analytics, and tracking domains are blocked locally.</string>
+    <string name="shield_desc_paused">ShieldNet is inactive. All network queries are unmonitored.</string>
+    <string name="start_protection">Start Protection</string>
+    <string name="stop_protection">Pause Protection</string>
+    <string name="vpn_notification_channel">ShieldNet Background Filtering</string>
+    <string name="vpn_notification_title">ShieldNet DNS Protection is Active</string>
+    <string name="vpn_notification_text">Filtering ads and tracking endpoints on-device.</string>
+</resources>
